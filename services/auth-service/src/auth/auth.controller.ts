@@ -23,4 +23,11 @@ export class AuthController {
     getMe(@Req() req) {
         return req.user;
     }
+
+    @UseGuards(AuthGuard('jwt'))
+    @Post('logout')
+    logout(@Req() req: any) {
+        const token = req.headers.authorization?.split(' ')[1];
+        return this.authService.logout(token);
+    }
 }
