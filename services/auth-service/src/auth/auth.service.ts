@@ -1,6 +1,6 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Cache } from 'cache-manager';
+import type { Cache } from 'cache-manager';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
@@ -57,17 +57,20 @@ export class AuthService {
   }
 
   async logout(token: string): Promise<void> {
-    const decoded = this.jwtService.decode(token) as { exp: number };
+  const decoded = this.jwtService.decode(token) as { exp: number };
 
-    if (!decoded?.exp) return;
+  if (!decoded?.exp) return;
 
-    const now = Math.floor(Date.now() / 1000);
-    const ttl = (decoded.exp - now) * 1000;
+  const now = Math.floor(Date.now() / 1000);
+  const ttl = (decoded.exp - now) * 1000;
+  console.log('TTL:', ttl);
 
-    if (ttl > 0) {
-      await this.cacheManager.set(token, 'blacklisted', ttl);
-    }
+  if (ttl > 0) {
+    await this.cacheManager.set(`blacklist:${token}`, true, ttl);
+    const check = await this.cacheManager.get(`blacklist:${token}`);
+    console.log('SAVED IN CACHE:', check);
   }
+}
 
   async isTokenBlackListed(token: string): Promise<boolean> {
     const result = await this.cacheManager.get(`blacklisted:${token}`);

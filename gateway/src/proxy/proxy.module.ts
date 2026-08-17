@@ -2,13 +2,12 @@ import { Module } from "@nestjs/common";
 import { PassportModule } from "@nestjs/passport";
 import { HttpModule } from "@nestjs/axios";
 import { ProxyController } from "./proxy.controller";
-import { JwtStrategy } from "../auth/jwt.strategy";
 
 
 @Module({
-    imports: [HttpModule, PassportModule],
+    imports: [HttpModule],
     controllers: [ProxyController],
-    providers: [JwtStrategy],
+    providers: [],
 })
 
 export class ProxyModule {

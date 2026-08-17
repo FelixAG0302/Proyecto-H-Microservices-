@@ -7,6 +7,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { StringValue } from 'ms';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './jwt.strategies';
+import { CacheModule } from '@nestjs/cache-manager';
+
 
 @Module({
   imports: [

@@ -4,6 +4,7 @@ import type { Request, Response } from 'express';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
+import { Public } from '../decorators/public.decorator';
 
 @Controller()
 export class ProxyController {
@@ -13,11 +14,13 @@ export class ProxyController {
     ) {}
 
 
+    @Public()
     @All('auth/register')
     proxyRegister(@Req() req: Request, @Res() res: Response) {
         return this.forward(req, res, this.config.get('AUTH_SERVICE_URL')!);
     }
 
+    @Public()
     @All('auth/login')
     proxyLogin(@Req() req: Request, @Res() res: Response) {
         return this.forward(req, res, this.config.get('AUTH_SERVICE_URL')!);
@@ -56,6 +59,9 @@ export class ProxyController {
                     headers: {
                         'Content-Type': 'application/json',
                         ...(user && { 'x-user-id': user.userId}),
+                        ...(req.headers.authorization && { 
+                        'authorization': req.headers.authorization 
+                    }),
                     },
                 }),
             );
